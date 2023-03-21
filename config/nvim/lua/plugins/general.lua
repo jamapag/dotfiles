@@ -17,6 +17,7 @@ return {
       require("mini.comment").setup({})
       require("mini.statusline").setup({})
       require("mini.trailspace").setup({})
+      require("mini.splitjoin").setup({})
 
       vim.keymap.set("n", "<leader>bd", ":lua MiniBufremove.wipeout()<CR>")
     end,
@@ -187,13 +188,6 @@ return {
         show_current_context_start = true,
       }
     end
-  },
-  {
-    "Wansmer/treesj",
-    keys = {
-      { "<leader>J", "<cmd>TSJToggle<cr>", desc = "Join Toggle" },
-    },
-    opts = { use_default_keymaps = false, max_join_length = 150 },
   },
   {
     "hrsh7th/nvim-cmp",
