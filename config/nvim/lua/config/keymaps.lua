@@ -44,3 +44,6 @@ vim.keymap.set("n", "N", "Nzzzv", { noremap = true })
 
 -- Super paste
 vim.keymap.set("i", "<C-v>", "<ESC>:set paste<CR>mui<C-R>+<ESC>mv'uV'v=:set nopaste<CR>", { noremap = true })
+
+
+vim.keymap.set("n", "<leader>pd", ':lua require("custom.phpdoc").insert_php_doc()<CR>', { noremap = true })
