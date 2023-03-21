@@ -204,17 +204,18 @@ return {
     config = function ()
       local cmp = require("cmp")
       cmp.setup({
-        -- completion = {
-        --   autocomplete = true,
-        -- },
+        completion = {
+          keyword_length = 1,
+          completeopt = 'menu,menuone,noinsert,noselect',
+        },
         snippet = {
           expand = function (args)
             vim.fn["vsnip#anonymous"](args.body)
           end,
         },
         mapping = {
-          ["<C-n>"] = cmp.mapping.select_next_item { behavior = cmp.SelectBehavior.Insert },
-          ["<C-p>"] = cmp.mapping.select_prev_item { behavior = cmp.SelectBehavior.Insert },
+          ['<C-n>'] = cmp.mapping.select_next_item { behavior = cmp.SelectBehavior.Insert },
+          ['<C-p>'] = cmp.mapping.select_prev_item { behavior = cmp.SelectBehavior.Insert },
           ['<C-d>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
           ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
           ['<C-e>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
@@ -233,7 +234,7 @@ return {
               end
             },
           },
-          { name = 'vsnip' },
+          { name = 'vsnip', keyword_pattern = [[\S\+]] },
           { name = 'path' }
         })
       })
