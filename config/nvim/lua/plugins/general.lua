@@ -318,8 +318,8 @@ return {
         vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, opts)
         vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
         vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-        vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
-        vim.keymap.set('n', '<leader>so', require('telescope.builtin').lsp_document_symbols, opts)
+        vim.keymap.set('n', '<leader>lca', vim.lsp.buf.code_action, opts)
+        vim.keymap.set('n', '<leader>ds', require('telescope.builtin').lsp_document_symbols, opts)
         vim.keymap.set('n', '<leader>df', vim.diagnostic.goto_next, opts)
         vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev, opts)
         vim.keymap.set('n', '<leader>dl', "<cmd>Telescope diagnostics<cr>", opts)
@@ -421,7 +421,11 @@ return {
   {
     "glepnir/lspsaga.nvim",
     config = function ()
-      require("lspsaga").setup({})
+      require("lspsaga").setup({
+        lightbulb = {
+          enable = false,
+        }
+      })
 
       -- Toggle outline
       vim.keymap.set("n","<leader>o", "<cmd>Lspsaga outline<CR>")
@@ -442,8 +446,8 @@ return {
       -- Conflics with mini.surround mappings
       -- leap.add_default_mappings()
 
-      vim.keymap.set({'n', 'x', 'o'}, 'f', '<Plug>(leap-forward-to)')
-      vim.keymap.set({'n', 'x', 'o'}, 'F', '<Plug>(leap-backward-to)')
+      vim.keymap.set({'n', 'x', 'o'}, '<leader>s', '<Plug>(leap-forward-to)')
+      vim.keymap.set({'n', 'x', 'o'}, '<leader>S', '<Plug>(leap-backward-to)')
 
     end
   },
