@@ -333,7 +333,7 @@ return {
         vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev, opts)
         vim.keymap.set('n', '<leader>dl', "<cmd>Telescope diagnostics<cr>", opts)
 
-        vim.api.nvim_create_user_command("Format", vim.lsp.buf.formatting, {})
+        vim.api.nvim_create_user_command("Format", vim.lsp.buf.format, {async = true})
       end
 
       local lspconfig = require('lspconfig')
