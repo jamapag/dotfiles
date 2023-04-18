@@ -102,3 +102,4 @@ vim.api.nvim_create_autocmd({ "BufReadPre" }, {
   pattern = "*",
 })
 
+vim.diagnostic.config({virtual_text = false})
