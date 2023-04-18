@@ -44,34 +44,43 @@ return {
       "nvim-tree/nvim-web-devicons",
     },
     config = function ()
-      local go_cd = function(node)
-        local core = require "nvim-tree.core"
-        if node.name == ".." then
-          print(core.get_cwd())
-          vim.api.nvim_command('cd ' .. core.get_cwd())
-        else
-          if node.fs_stat.type == "directory" then
-            print(node.absolute_path)
-            vim.api.nvim_command('cd ' .. node.absolute_path)
-          end
+      local function on_attach(bufnr)
+        local api = require('nvim-tree.api')
+        local function opts(desc)
+          return { desc = 'nvim-tree: ' .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
         end
-      end
 
-      local list = {
-        { key = "gcd", action = "print_path", action_cb = go_cd },
-        { key = "s", action = "vsplit" },
-        { key = "gs", action = "system_open" },
-      }
+        api.config.mappings.default_on_attach(bufnr)
+
+        vim.keymap.set('n', 'gcd', function()
+          local node = api.tree.get_node_under_cursor()
+          local core = require "nvim-tree.core"
+          if node.name == ".." then
+            print(core.get_cwd())
+            vim.api.nvim_command('cd ' .. core.get_cwd())
+          else
+            if node.fs_stat.type == "directory" then
+              print(node.absolute_path)
+              vim.api.nvim_command('cd ' .. node.absolute_path)
+            end
+          end
+        end, opts('print_path'))
+
+        vim.keymap.set('n', 's', api.node.open.vertical, opts('Open: Vertical Split'))
+        vim.keymap.set('n', 'gs', api.node.run.system, opts('Run System'))
+        vim.keymap.set('n', 'gfg', function()
+          local node = api.tree.get_node_under_cursor()
+          if not node then return end
+          require('telescope.builtin').live_grep({search_dirs = {node.absolute_path}})
+        end, opts('no description'))
+
+      end
 
       require("nvim-tree").setup({
         update_focused_file = {
           enable = true,
         },
-        view = {
-          mappings = {
-            list = list,
-          },
-        },
+        on_attach = on_attach,
         renderer = {
           group_empty = false,
         },
@@ -108,7 +117,7 @@ return {
         "gitignore",
         "go",
         "graphql",
-        "help",
+        "vimdoc",
         "html",
         "http",
         "java",
