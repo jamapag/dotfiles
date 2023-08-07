@@ -2,7 +2,15 @@ return {
   {
     "folke/tokyonight.nvim",
     lazy = false,
-    priority = 1000, config = function ()
+    priority = 1000,
+    config = function ()
+      require("tokyonight").setup({
+        on_highlights = function(hl, c)
+          hl.MiniCursorword = { underline = true }
+          hl.MiniCursorwordCurrent = { underline = true }
+        end,
+      })
+
       vim.cmd([[colorscheme tokyonight]])
     end,
   },
@@ -18,8 +26,23 @@ return {
       require("mini.statusline").setup({})
       require("mini.trailspace").setup({})
       require("mini.splitjoin").setup({})
+      require("mini.files").setup({})
+      -- require("mini.clue").setup({
+      --   triggers = {
+      --     -- Leader triggers
+      --     { mode = 'n', keys = '<Leader>' },
+      --
+      --     -- Built-in completion
+      --     { mode = 'i', keys = '<C-x>' },
+      --
+      --     -- `g` key
+      --     { mode = 'n', keys = 'g' },
+      --     { mode = 'x', keys = 'g' },
+      --     { mode = 'x', keys = '<Leader>' },
+      --   }
+      -- })
 
-      vim.keymap.set("n", "<leader>bd", ":lua MiniBufremove.wipeout()<CR>")
+      vim.keymap.set("n", "<leader>bd", ":lua MiniBufremove.wipeout()<CR>", { desc = "Delete buffer" })
     end,
   },
   {
@@ -428,7 +451,7 @@ return {
     end
   },
   {
-    "glepnir/lspsaga.nvim",
+    "nvimdev/lspsaga.nvim",
     config = function ()
       require("lspsaga").setup({
         lightbulb = {
@@ -553,5 +576,6 @@ return {
       })
     end,
   },
+  { 'mg979/vim-visual-multi' },
 }
 
