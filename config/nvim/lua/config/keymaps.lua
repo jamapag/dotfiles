@@ -1,17 +1,17 @@
 -- Past without rewriting copied text
-vim.keymap.set("x", "<leader>p", '"_dP', { noremap = true })
+vim.keymap.set("x", "<leader>p", '"_dP', { desc = "Paste without rewriting copied text", noremap = true })
 
 -- Highlight last inserted text
-vim.keymap.set("n", "gV", "`[v`]", { noremap = true })
+vim.keymap.set("n", "gV", "`[v`]", { desc = "Highlight last inserted text", noremap = true })
 
 -- Space toggle folds
-vim.keymap.set("n", "<Space>", "za", { noremap = true })
-vim.keymap.set("v", "<Space>", "zf", { noremap = true })
+vim.keymap.set("n", "<Space>", "za", { desc = "Toggle fold", noremap = true })
+vim.keymap.set("v", "<Space>", "zf", { desc = "Toggle fold", noremap = true })
 
-vim.keymap.set("n", "<leader>l", ":set list!<CR>")
+vim.keymap.set("n", "<leader>l", ":set list!<CR>", { desc = "Toggle showing tabs, spaces, trailing spaces" })
 
-vim.keymap.set("n", "<leader>ce", ":e! ~/.config/nvim/init.lua<CR>")
-vim.keymap.set("n", "<leader>cp", ":e! ~/.config/nvim/lua/plugins/general.lua<CR>")
+vim.keymap.set("n", "<leader>ce", ":e! ~/.config/nvim/init.lua<CR>", { desc = "Edit init.lua" })
+vim.keymap.set("n", "<leader>cp", ":e! ~/.config/nvim/lua/plugins/general.lua<CR>", { desc = "Edit plugins/general.lua" })
 
 -- Window jumping: Replaced with vim-tmux-navigator mappings.
 -- vim.keymap.set("n", "<C-j>", "<C-W>j")
@@ -46,4 +46,4 @@ vim.keymap.set("n", "N", "Nzzzv", { noremap = true })
 vim.keymap.set("i", "<C-v>", "<ESC>:set paste<CR>mui<C-R>+<ESC>mv'uV'v=:set nopaste<CR>", { noremap = true })
 
 
-vim.keymap.set("n", "<leader>pd", ':lua require("custom.phpdoc").insert_php_doc()<CR>', { noremap = true })
+vim.keymap.set("n", "<leader>pd", ':lua require("custom.phpdoc").insert_php_doc()<CR>', { desc = "Insert php doc string", noremap = true })

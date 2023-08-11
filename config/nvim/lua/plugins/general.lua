@@ -27,20 +27,23 @@ return {
       require("mini.trailspace").setup({})
       require("mini.splitjoin").setup({})
       require("mini.files").setup({})
-      -- require("mini.clue").setup({
-      --   triggers = {
-      --     -- Leader triggers
-      --     { mode = 'n', keys = '<Leader>' },
-      --
-      --     -- Built-in completion
-      --     { mode = 'i', keys = '<C-x>' },
-      --
-      --     -- `g` key
-      --     { mode = 'n', keys = 'g' },
-      --     { mode = 'x', keys = 'g' },
-      --     { mode = 'x', keys = '<Leader>' },
-      --   }
-      -- })
+      require("mini.clue").setup({
+        triggers = {
+          -- Leader triggers
+          { mode = 'n', keys = '<Leader>' },
+
+          { mode = 'n', keys = ']' },
+          { mode = 'n', keys = '[' },
+
+          -- Built-in completion
+          { mode = 'i', keys = '<C-x>' },
+
+          -- `g` key
+          { mode = 'n', keys = 'g' },
+          { mode = 'x', keys = 'g' },
+          { mode = 'x', keys = '<Leader>' },
+        }
+      })
 
       local hipatterns = require('mini.hipatterns')
       hipatterns.setup({
@@ -101,7 +104,7 @@ return {
               vim.api.nvim_command('cd ' .. node.absolute_path)
             end
           end
-        end, opts('print_path'))
+        end, opts('change dir'))
 
         vim.keymap.set('n', 's', api.node.open.vertical, opts('Open: Vertical Split'))
         vim.keymap.set('n', 'gs', api.node.run.system, opts('Run System'))
@@ -109,7 +112,7 @@ return {
           local node = api.tree.get_node_under_cursor()
           if not node then return end
           require('telescope.builtin').live_grep({search_dirs = {node.absolute_path}})
-        end, opts('no description'))
+        end, opts('Telescope live_grep in folder'))
 
       end
 
@@ -345,33 +348,36 @@ return {
         buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
         -- Mappings.
-        local opts = { noremap=true, silent=true }
+        local function opts(desc)
+          return { desc = desc, noremap = true, silent = true }
+        end
+
 
         -- See `:help vim.lsp.*` for documentation on any of the below functions
         --buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
         --buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
         --buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 
-        vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-        vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-        vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-        vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-        vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
-        vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, opts)
-        vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, opts)
+        vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts("Lsp: Go to declaration"))
+        vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts("Lsp: Go to definition"))
+        vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts("Lsp: Buf hover"))
+        vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts("Lsp: Go to implementation"))
+        vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts("Lsp: Signature help"))
+        vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, opts("Lsp: Add workspace folder"))
+        vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, opts("Lsp: Remove workspace folder"))
         vim.keymap.set('n', '<leader>wl', function()
           vim.inspect(vim.lsp.buf.list_workspace_folders())
-        end, opts)
-        vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, opts)
-        vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
-        vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-        vim.keymap.set('n', '<leader>lca', vim.lsp.buf.code_action, opts)
-        vim.keymap.set('n', '<leader>ds', require('telescope.builtin').lsp_document_symbols, opts)
-        vim.keymap.set('n', '<leader>df', vim.diagnostic.goto_next, opts)
-        vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev, opts)
-        vim.keymap.set('n', '<leader>dl', "<cmd>Telescope diagnostics<cr>", opts)
+        end, opts("Lsp: List workspace folders"))
+        vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, opts("Lsp: Type difinition"))
+        vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts("Lsp: buf rename"))
+        vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts("Lsp: show references"))
+        vim.keymap.set('n', '<leader>lca', vim.lsp.buf.code_action, opts("Lsp: code actions"))
+        vim.keymap.set('n', '<leader>ds', require('telescope.builtin').lsp_document_symbols, opts("Lsp: telescope document symbols"))
+        vim.keymap.set('n', '<leader>df', vim.diagnostic.goto_next, opts("Lsp: diagnostic goto next"))
+        vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev, opts("Lsp: diagnostic goto prev"))
+        vim.keymap.set('n', '<leader>dl', "<cmd>Telescope diagnostics<cr>", opts("Lsp: telescope diagnostics"))
 
-        vim.api.nvim_create_user_command("Format", vim.lsp.buf.format, {async = true})
+        vim.api.nvim_create_user_command("Format", vim.lsp.buf.format, {})
       end
 
       local lspconfig = require('lspconfig')
@@ -415,7 +421,7 @@ return {
         let g:fzf_action = { 'ctrl-t': 'tab split', 'ctrl-x': 'split', 'ctrl-v': 'vsplit' }
       ]]
 
-      vim.keymap.set("n", "<leader>b", ":Buffers<CR>")
+      vim.keymap.set("n", "<leader>bl", ":Buffers<CR>")
       vim.keymap.set("n", "<leader>a", ":Ag<CR>", { desc = "fzf: AG", noremap = true, silent = true })
       vim.keymap.set("n", "<C-p>", ":Files<CR>", { desc = "fzf: Files", noremap = true, silent = true })
     end
@@ -438,26 +444,26 @@ return {
             if vim.wo.diff then return ']c' end
             vim.schedule(function() gs.next_hunk() end)
             return '<Ignore>'
-          end, {expr=true})
+          end, {expr=true, desc = "Next hunk" })
 
           map('n', '[c', function()
             if vim.wo.diff then return '[c' end
             vim.schedule(function() gs.prev_hunk() end)
             return '<Ignore>'
-          end, {expr=true})
+          end, {expr=true, desc = "Prev hunk" })
 
           -- Actions
-          map({'n', 'v'}, '<leader>hs', ':Gitsigns stage_hunk<CR>')
-          map({'n', 'v'}, '<leader>hr', ':Gitsigns reset_hunk<CR>')
-          map('n', '<leader>hS', gs.stage_buffer)
-          map('n', '<leader>hu', gs.undo_stage_hunk)
-          map('n', '<leader>hR', gs.reset_buffer)
-          map('n', '<leader>hp', gs.preview_hunk)
-          map('n', '<leader>hb', function() gs.blame_line{full=true} end)
-          map('n', '<leader>tb', gs.toggle_current_line_blame)
-          map('n', '<leader>hd', gs.diffthis)
-          map('n', '<leader>hD', function() gs.diffthis('~') end)
-          map('n', '<leader>td', gs.toggle_deleted)
+          map({'n', 'v'}, '<leader>hs', ':Gitsigns stage_hunk<CR>', { desc = "Gitsigns: Stage hunk" })
+          map({'n', 'v'}, '<leader>hr', ':Gitsigns reset_hunk<CR>', { desc = "Gitsigns: Reset hunk" })
+          map('n', '<leader>hS', gs.stage_buffer, { desc = "Gitsigns: Stage buffer" })
+          map('n', '<leader>hu', gs.undo_stage_hunk, { desc = "Gitsigns: undo stage hunk" })
+          map('n', '<leader>hR', gs.reset_buffer, { desc = "Gitsigns: reset buffer" })
+          map('n', '<leader>hp', gs.preview_hunk, { desc = "Gitsigns: preview hunk" })
+          map('n', '<leader>hb', function() gs.blame_line{full=true} end, { desc = "Gitsigns: blame line" })
+          map('n', '<leader>tb', gs.toggle_current_line_blame, { desc = "Gitsigns: toggle current line blame" })
+          map('n', '<leader>hd', gs.diffthis, { desc = "Gitsigns: diffthis" })
+          map('n', '<leader>hD', function() gs.diffthis('~') end, { desc = "Gitsigns: diffthis ~" })
+          map('n', '<leader>td', gs.toggle_deleted, { desc = "Gitsigns: toggle deleted" })
 
           -- Text object
           -- map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
@@ -475,15 +481,15 @@ return {
       })
 
       -- Toggle outline
-      vim.keymap.set("n","<leader>o", "<cmd>Lspsaga outline<CR>")
+      vim.keymap.set("n","<leader>o", "<cmd>Lspsaga outline<CR>", { desc = "Lspsaga: outline" })
 
       -- Rename
-      vim.keymap.set("n","<leader>gr", "<cmd>Lspsaga rename<CR>")
+      vim.keymap.set("n","<leader>gr", "<cmd>Lspsaga rename<CR>", { desc = "Lspsaga: rename" })
 
       -- Code action
-      vim.keymap.set({"n","v"}, "<leader>ca", "<cmd>Lspsaga code_action<CR>")
+      vim.keymap.set({"n","v"}, "<leader>ca", "<cmd>Lspsaga code_action<CR>", { desc = "Lspsaga: code_action"})
 
-      vim.keymap.set({"n","t"}, "<leader>tt", "<cmd>Lspsaga term_toggle<CR>")
+      vim.keymap.set({"n","t"}, "<leader>tt", "<cmd>Lspsaga term_toggle<CR>", { desc = "Lspsaga: term_toggle" })
     end
   },
   {
@@ -493,8 +499,8 @@ return {
       -- Conflics with mini.surround mappings
       -- leap.add_default_mappings()
 
-      vim.keymap.set({'n', 'x', 'o'}, '<leader>s', '<Plug>(leap-forward-to)')
-      vim.keymap.set({'n', 'x', 'o'}, '<leader>S', '<Plug>(leap-backward-to)')
+      vim.keymap.set({'n', 'x', 'o'}, '<leader>s', '<Plug>(leap-forward-to)', { desc = "Leap forward" })
+      vim.keymap.set({'n', 'x', 'o'}, '<leader>S', '<Plug>(leap-backward-to)', { desc = "Leap backward" })
 
     end
   },
@@ -552,8 +558,8 @@ return {
       local mark = require("harpoon.mark")
       local ui = require("harpoon.ui")
 
-      vim.keymap.set("n", "<leader>ha", mark.add_file)
-      vim.keymap.set("n", "<leader>hh", ui.toggle_quick_menu)
+      vim.keymap.set("n", "<leader>ha", mark.add_file, { desc = "Harpoon: add file" })
+      vim.keymap.set("n", "<leader>hh", ui.toggle_quick_menu, { desc = "Harpoon: toggle quick menu" })
 
       vim.keymap.set("n", "<leader>1", function() ui.nav_file(1) end)
       vim.keymap.set("n", "<leader>2", function() ui.nav_file(2) end)
