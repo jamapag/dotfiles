@@ -78,7 +78,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
 })
 
 vim.api.nvim_create_autocmd({ "FileType" }, {
-  pattern = {"php"},
+  pattern = {"php", "phtml", "js"},
   callback = function()
     vim.opt.commentstring = "// %s"
   end,

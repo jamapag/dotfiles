@@ -42,6 +42,20 @@ return {
       --   }
       -- })
 
+      local hipatterns = require('mini.hipatterns')
+      hipatterns.setup({
+        highlighters = {
+          -- Highlight standalone 'FIXME', 'HACK', 'TODO', 'NOTE'
+          fixme = { pattern = '%f[%w]()FIXME()%f[%W]', group = 'MiniHipatternsFixme' },
+          hack  = { pattern = '%f[%w]()HACK()%f[%W]',  group = 'MiniHipatternsHack'  },
+          todo  = { pattern = '%f[%w]()TODO()%f[%W]',  group = 'MiniHipatternsTodo'  },
+          note  = { pattern = '%f[%w]()NOTE()%f[%W]',  group = 'MiniHipatternsNote'  },
+
+          -- Highlight hex color strings (`#rrggbb`) using that color
+          hex_color = hipatterns.gen_highlighter.hex_color(),
+        },
+      })
+
       vim.keymap.set("n", "<leader>bd", ":lua MiniBufremove.wipeout()<CR>", { desc = "Delete buffer" })
     end,
   },
@@ -54,10 +68,10 @@ return {
       require('telescope').setup({})
 
       -- Find files using Telescope command-line sugar.
-      vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { noremap = false })
-      vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<CR>", { noremap = false })
-      vim.keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { noremap = false })
-      vim.keymap.set("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { noremap = false })
+      vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { desc = "Telescope: find_files", noremap = false })
+      vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<CR>", { desc = "Telescope: live_grep", noremap = false })
+      vim.keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { desc = "Telescope: buffers", noremap = false })
+      vim.keymap.set("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { desc = "Telescope: help_tags", noremap = false })
     end
   },
   { "christoomey/vim-tmux-navigator" },
@@ -317,6 +331,7 @@ return {
           "cssls",
           "html",
           "tsserver",
+          "ols",
         },
       }
 
@@ -401,8 +416,8 @@ return {
       ]]
 
       vim.keymap.set("n", "<leader>b", ":Buffers<CR>")
-      vim.keymap.set("n", "<leader>a", ":Ag<CR>", { noremap = true, silent = true })
-      vim.keymap.set("n", "<C-p>", ":Files<CR>", { noremap = true, silent = true })
+      vim.keymap.set("n", "<leader>a", ":Ag<CR>", { desc = "fzf: AG", noremap = true, silent = true })
+      vim.keymap.set("n", "<C-p>", ":Files<CR>", { desc = "fzf: Files", noremap = true, silent = true })
     end
   },
   {
@@ -456,7 +471,7 @@ return {
       require("lspsaga").setup({
         lightbulb = {
           enable = false,
-        }
+        },
       })
 
       -- Toggle outline
@@ -548,34 +563,6 @@ return {
     end
   },
   { 'elmar-hinz/vim.typoscript' },
-  {
-    "Bryley/neoai.nvim",
-    dependencies = {
-      "MunifTanjim/nui.nvim",
-    },
-    cmd = {
-      "NeoAI",
-      "NeoAIOpen",
-      "NeoAIClose",
-      "NeoAIToggle",
-      "NeoAIContext",
-      "NeoAIContextOpen",
-      "NeoAIContextClose",
-      "NeoAIInject",
-      "NeoAIInjectCode",
-      "NeoAIInjectContext",
-      "NeoAIInjectContextCode",
-    },
-    keys = {
-      { "<leader>as", desc = "summarize text" },
-      { "<leader>ag", desc = "generate git message" },
-    },
-    config = function()
-      require("neoai").setup({
-        open_api_key_env = "OPENAI_API_KEY",
-      })
-    end,
-  },
   { 'mg979/vim-visual-multi' },
 }
 
