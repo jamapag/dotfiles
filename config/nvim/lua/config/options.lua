@@ -29,8 +29,8 @@ vim.opt.ruler = true
 
 vim.opt.clipboard = "unnamed"
 
-vim.opt.scrolloff = 10
-vim.opt.sidescrolloff = 10
+vim.opt.scrolloff = 20
+vim.opt.sidescrolloff = 20
 vim.opt.sidescroll = 1
 
 vim.opt.ignorecase = true
@@ -78,7 +78,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
 })
 
 vim.api.nvim_create_autocmd({ "FileType" }, {
-  pattern = {"php", "phtml", "js"},
+  pattern = {"php", "phtml", "js", "odin"},
   callback = function()
     vim.opt.commentstring = "// %s"
   end,

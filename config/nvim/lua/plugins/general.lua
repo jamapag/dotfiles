@@ -27,23 +27,23 @@ return {
       require("mini.trailspace").setup({})
       require("mini.splitjoin").setup({})
       require("mini.files").setup({})
-      require("mini.clue").setup({
-        triggers = {
-          -- Leader triggers
-          { mode = 'n', keys = '<Leader>' },
-
-          { mode = 'n', keys = ']' },
-          { mode = 'n', keys = '[' },
-
-          -- Built-in completion
-          { mode = 'i', keys = '<C-x>' },
-
-          -- `g` key
-          { mode = 'n', keys = 'g' },
-          { mode = 'x', keys = 'g' },
-          { mode = 'x', keys = '<Leader>' },
-        }
-      })
+      -- require("mini.clue").setup({
+      --   triggers = {
+      --     -- Leader triggers
+      --     { mode = 'n', keys = '<Leader>' },
+      --
+      --     { mode = 'n', keys = ']' },
+      --     { mode = 'n', keys = '[' },
+      --
+      --     -- Built-in completion
+      --     { mode = 'i', keys = '<C-x>' },
+      --
+      --     -- `g` key
+      --     { mode = 'n', keys = 'g' },
+      --     { mode = 'x', keys = 'g' },
+      --     { mode = 'x', keys = '<Leader>' },
+      --   }
+      -- })
 
       local hipatterns = require('mini.hipatterns')
       hipatterns.setup({
@@ -78,6 +78,7 @@ return {
     end
   },
   { "christoomey/vim-tmux-navigator" },
+  { 'christoomey/vim-tmux-runner' },
   {
     "nvim-tree/nvim-tree.lua",
     dependencies = {
@@ -133,8 +134,8 @@ return {
       vim.keymap.set("n", "<leader>ne", ":NvimTreeFindFileToggle<CR>")
     end,
   },
+  -- Show marks
   { "kshenoy/vim-signature" },
-  { "nvim-treesitter/playground", cmd = "TSPlaygroundToggle" },
   {
     "nvim-treesitter/nvim-treesitter-context",
     event = "BufReadPre",
@@ -274,7 +275,6 @@ return {
         },
         sources = cmp.config.sources({
           { name = 'nvim_lsp' },
-          { name = 'async_clj_omni' },
           {
             name = 'buffer',
             option = {
@@ -284,8 +284,24 @@ return {
             },
           },
           { name = 'vsnip', keyword_pattern = [[\S\+]] },
+          -- { name = 'vsnip' },
           { name = 'path' }
         })
+      })
+
+      local autocomplete_group = vim.api.nvim_create_augroup('vimrc_autocompletion', { clear = true })
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = { 'sql', 'mysql', 'plsql' },
+        callback = function()
+          cmp.setup.buffer({
+            sources = {
+              { name = 'vim-dadbod-completion' },
+              { name = 'buffer' },
+              { name = 'vsnip' },
+            },
+          })
+        end,
+        group = autocomplete_group,
       })
 
       vim.api.nvim_set_keymap('i', '<Tab>', 'vsnip#jumpable(1) ? "<Plug>(vsnip-jump-next)" : "<Tab>"', { silent = true, expr = true })
@@ -410,7 +426,9 @@ return {
       "nvim-telescope/telescope.nvim",
     },
   },
-  { "prettier/vim-prettier" },
+  --{ "prettier/vim-prettier" },
+  --{ "sbdchd/neoformat" },
+  { "adnan007d/vim-prettier" },
   {
     "junegunn/fzf.vim",
     dependencies = {
@@ -501,57 +519,12 @@ return {
 
       vim.keymap.set({'n', 'x', 'o'}, '<leader>s', '<Plug>(leap-forward-to)', { desc = "Leap forward" })
       vim.keymap.set({'n', 'x', 'o'}, '<leader>S', '<Plug>(leap-backward-to)', { desc = "Leap backward" })
+      vim.keymap.set({'n', 'x', 'o'}, 'gs', '<Plug>(leap-from-window)', { desc = "Leap Leap untill" })
 
     end
   },
   { "romainl/vim-cool" },
   { "mattn/emmet-vim" },
-  { "dart-lang/dart-vim-plugin" },
-  { "akinsho/flutter-tools.nvim",
-      dependencies = {
-      "nvim-lua/plenary.nvim"
-    },
-    config = function ()
-      local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
-      local lsp_attach = function(client, bufnr)
-        local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
-
-        -- Enable completion triggered by <c-x><c-o>
-        buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-        -- Mappings.
-        local opts = { noremap=true, silent=true }
-
-        vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-        vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-        vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-        vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-        vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
-        vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, opts)
-        vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, opts)
-        vim.keymap.set('n', '<leader>wl', function()
-          vim.inspect(vim.lsp.buf.list_workspace_folders())
-        end, opts)
-        vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, opts)
-        vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
-        vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-        vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
-        vim.keymap.set('n', '<leader>so', require('telescope.builtin').lsp_document_symbols, opts)
-        vim.keymap.set('n', '<leader>df', vim.diagnostic.goto_next, opts)
-        vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev, opts)
-        vim.keymap.set('n', '<leader>dl', "<cmd>Telescope diagnostics<cr>", opts)
-
-        vim.api.nvim_create_user_command("Format", vim.lsp.buf.formatting, {})
-      end
-      require("flutter-tools").setup{
-        lsp = {
-          on_attach = lsp_attach,
-          capabilities = lsp_capabilities
-        }
-      }
-    end
-  },
-  { 'christoomey/vim-tmux-runner' },
   {
     'ThePrimeagen/harpoon',
     config = function ()
@@ -570,5 +543,25 @@ return {
   },
   { 'elmar-hinz/vim.typoscript' },
   { 'mg979/vim-visual-multi' },
+  -- Database query in vim:
+  {
+    'kristijanhusak/vim-dadbod-ui',
+    dependencies = {
+      { 'tpope/vim-dadbod', lazy = true },
+      { 'kristijanhusak/vim-dadbod-completion', ft = { 'sql', 'mysql', 'plsql' }, lazy = true },
+    },
+    event = 'VeryLazy',
+    cmd = {
+      'DBUI',
+      'DBUIToggle',
+      'DBUIAddConnection',
+      'DBUIFindBuffer',
+    },
+    init = function()
+      -- vim.g.db_ui_show_help = 0
+      -- vim.g.db_ui_win_position = 'right'
+      -- vim.g.db_ui_use_nerd_fonts = 1
+    end,
+  }
 }
 

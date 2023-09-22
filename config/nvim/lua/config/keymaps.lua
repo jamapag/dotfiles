@@ -47,3 +47,6 @@ vim.keymap.set("i", "<C-v>", "<ESC>:set paste<CR>mui<C-R>+<ESC>mv'uV'v=:set nopa
 
 
 vim.keymap.set("n", "<leader>pd", ':lua require("custom.phpdoc").insert_php_doc()<CR>', { desc = "Insert php doc string", noremap = true })
+
+vim.keymap.set("n", "<leader>t2", ':set shiftwidth=2<CR>', { noremap = true })
+vim.keymap.set("n", "<leader>t4", ':set shiftwidth=4<CR>', { noremap = true })
