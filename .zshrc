@@ -1,13 +1,30 @@
-# Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
-HISTSIZE=1000
-SAVEHIST=1000
+# Keep 10000 lines of history within the shell and save it to ~/.zsh_history:
+HISTSIZE=10000
+SAVEHIST=10000
 HISTFILE=~/.zsh_history
 LSCOLORS=ExFxCxDxBxegedabagacad
 
-export EDITOR=vim
-export PATH=${PATH}:/Users/maks/LocalBin/apache-mavven-3.0.3/bin:/Users/maks/LocalBin/android-sdk-macosx/platform-tools:/Users/maks/LocalBin/android-sdk-macosx/tools
-export CATALINA_HOME=/Users/maks/LocalBin/apache-tomcat-7.0.22
-source ~/.profile
+LANG="en_US.UTF-8"
+export LC_CTYPE="UTF-8"
+export LC_ALL=$LANG
+export PKG_CONFIG_PATH=/usr/local/Library/ENV/pkgconfig/10.9
+export EDITOR=nvim
+
+export PATH="$PATH":"$HOME/.pub-cache/bin"
+export PATH=/usr/local/bin:${PATH}
+export PATH=/usr/local/sbin:${PATH}
+export PATH=${PATH}:/usr/local/go/bin
+export PATH=${PATH}:/Users/maks/Library/Python/3.8/bin
+export PATH=/usr/local/opt/php@8.2/bin:${PATH}
+export PATH=${PATH}:/Users/maks/bin
+export PATH=/opt/homebrew/bin:${PATH}
+
+export DOCKER_DEFAULT_PLATFORM=linux/amd64
+#export DOCKER_BUILDKIT=0
+
+eval "$(zoxide init zsh)"
+
+export RIPGREP_CONFIG_PATH=$HOME/.config/ripgrep/ripgreprc
 
 setopt extended_glob prompt_subst
 autoload colors zsh/terminfo
@@ -15,13 +32,19 @@ autoload colors zsh/terminfo
 autoload -Uz compinit
 compinit
 
+#compdef -d git
+
+__git_files () {
+    _wanted files expl 'local files' _files
+}
+
 bindkey '^R' history-incremental-search-backward
 bindkey '^A' beginning-of-line
 bindkey '^E' end-of-line
-bindkey '^J' self-insert
+bindkey '^K' kill-line
 
 zstyle ':completion:*' auto-description 'specify: %d'
-zstyle ':completion:*' completer _expand _complete _correct _approximate
+zstyle ':completion:*' completer _expand _complete _files _correct _approximate
 zstyle ':completion:*' format 'Completing %d'
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' menu select=2
@@ -41,21 +64,27 @@ zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 alias ls="ls -G"
 alias ..="cd .."
 alias ...="cd ../.."
-alias ll="ls -la"
-alias co="pc -ia"
+alias ll="ls -lah"
 alias mv="mv -i"
 alias rm="rm -r"
 alias cls="clear"
-alias upmem="ps aux | sort -k 6"
-alias df="df -hT"
-alias du="du -hc"
+alias upmem="ps aux | sort -k 5"
+alias df="df -h"
+alias dusort="du -sm * | sort -rn"
+alias weather="curl http://wttr\.in/zhytomyr"
+alias show-colors='for code ({000..255}) { print -nP -- "$code: %F{$code}%K{$code}Test%k%f " ; (( code % 8 && code < 255 )) || printf "\n"}'
+alias v="nvim"
+alias myip="curl ifconfig.co/json"
+alias ping1="ping 1.1.1.1"
 
 source ~/.zsh/.ssh_aliases
 
 alias gst="git status"
 alias gl="git pull"
+alias glr="git pull --rebase"
 alias gp="git push"
-alias gd="git diff | mate"
+alias gpg="git push origin HEAD:refs/for/master"
+alias gd="git diff"
 alias gau="git add --update"
 alias gc="git commit -v"
 alias gca="git commit -v -a"
@@ -67,25 +96,31 @@ alias gcot="git checkout -t"
 alias gcotb="git checkout --track -b"
 alias glog="git log"
 alias glogp="git log --pretty=format:'%h %s' --graph"
+alias glogstat="git log --stat -p"
+
+
+alias gserve="git pull && npm run build && npm run serve"
+
+alias sd="cd \$(fd --type d -I . ~/Projects/ | fzf)"
 
 
 function precmd {
      # Terminal width = width - 1 (for lineup)
      local TERMWIDTH
-     ((TERMWIDTH=${COLUMNS} - 1))    
- 
+     ((TERMWIDTH=${COLUMNS} - 1))
+
      # Truncate long paths
      PR_FILLBAR=""
      PR_PWDLEN=""
      local PROMPTSIZE="${#${(%):---(%n@%m:%l)---()--}}"
-     local PWDSIZE="${#${(%):-%~}}"  
+     local PWDSIZE="${#${(%):-%~}}"
      if [[ "${PROMPTSIZE} + ${PWDSIZE}" -gt ${TERMWIDTH} ]]; then
      ((PR_PWDLEN=${TERMWIDTH} - ${PROMPTSIZE}))
      else
          PR_FILLBAR="\${(l.((${TERMWIDTH} - (${PROMPTSIZE} + ${PWDSIZE})))..${PR_HBAR}.)}"
      fi
  }
- 
+
  function preexec () {
      # Screen window titles as currently running programs
      if [[ "${TERM}" == "screen-256color" ]]; then
@@ -139,18 +174,18 @@ function setprompt () {
             echo -en "\e]PE93e0e3" # bright-cyan   (cyan)
             echo -en "\e]P7dcdccc" # white         (lightgrey)
             echo -en "\e]PFffffff" # bright-white  (white)
-            PROMPT='$PR_GREEN%n@%m$PR_WHITE:$PR_YELLOW%l$PR_WHITE:$PR_RED%~$PR_YELLOW%%$PR_NO_COLOUR '
+            PROMPT='$PR_MAGENTA%n@%m$PR_WHITE:$PR_YELLOW%l$PR_WHITE:$PR_RED%~$PR_YELLOW%%$PR_NO_COLOUR '
             ;;
         *)  # Main prompt
-            PROMPT='$PR_SET_CHARSET$PR_GREEN$PR_SHIFT_IN$PR_ULCORNER$PR_GREEN$PR_HBAR\
-$PR_SHIFT_OUT($PR_GREEN%n$PR_GREEN@%m$PR_WHITE:$PR_YELLOW%l$PR_GREEN)\
-$PR_SHIFT_IN$PR_HBAR$PR_GREEN$PR_HBAR${(e)PR_FILLBAR}$PR_GREEN$PR_HBAR$PR_SHIFT_OUT(\
-$PR_RED%$PR_PWDLEN<...<%~%<<$PR_GREEN)$PR_SHIFT_IN$PR_HBAR$PR_GREEN$PR_URCORNER$PR_SHIFT_OUT\
+            PROMPT='$PR_SET_CHARSET$PR_MAGENTA$PR_SHIFT_IN$PR_ULCORNER$PR_MAGENTA$PR_HBAR\
+$PR_SHIFT_OUT($PR_MAGENTA%n$PR_MAGENTA@%m$PR_WHITE:$PR_YELLOW%l$PR_MAGENTA)\
+$PR_SHIFT_IN$PR_HBAR$PR_MAGENTA$PR_HBAR${(e)PR_FILLBAR}$PR_MAGENTA$PR_HBAR$PR_SHIFT_OUT(\
+$PR_RED%$PR_PWDLEN<...<%~%<<$PR_MAGENTA)$PR_SHIFT_IN$PR_HBAR$PR_MAGENTA$PR_URCORNER$PR_SHIFT_OUT\
 
-$PR_GREEN$PR_SHIFT_IN$PR_LLCORNER$PR_GREEN$PR_HBAR$PR_SHIFT_OUT(\
-%(?..$PR_RED%?$PR_WHITE:)%(!.$PR_RED.$PR_YELLOW)%#$PR_GREEN)$PR_NO_COLOUR '
+$PR_MAGENTA$PR_SHIFT_IN$PR_LLCORNER$PR_MAGENTA$PR_HBAR$PR_SHIFT_OUT(\
+%(?..$PR_RED%?$PR_WHITE:)%(!.$PR_RED.$PR_YELLOW)%#$PR_MAGENTA)$PR_NO_COLOUR '
 
-            RPROMPT=' $PR_GREEN$PR_SHIFT_IN$PR_HBAR$PR_GREEN$PR_LRCORNER$PR_SHIFT_OUT$PR_NO_COLOUR'
+            RPROMPT=' $PR_MAGENTA$PR_SHIFT_IN$PR_HBAR$PR_MAGENTA$PR_LRCORNER$PR_SHIFT_OUT$PR_NO_COLOUR'
             ;;
     esac
 }
@@ -158,3 +193,16 @@ $PR_GREEN$PR_SHIFT_IN$PR_LLCORNER$PR_GREEN$PR_HBAR$PR_SHIFT_OUT(\
 # Prompt init
 setprompt
 
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+#source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+#If you need to have this software first in your PATH run:
+#  echo 'export PATH="/usr/local/opt/icu4c/bin:$PATH"' >> ~/.zshrc
+#  echo 'export PATH="/usr/local/opt/icu4c/sbin:$PATH"' >> ~/.zshrc
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
+
+export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
