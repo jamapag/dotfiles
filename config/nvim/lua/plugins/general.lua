@@ -27,6 +27,7 @@ return {
       require("mini.trailspace").setup({})
       require("mini.splitjoin").setup({})
       require("mini.files").setup({})
+      require("mini.indentscope").setup({})
       -- require("mini.clue").setup({
       --   triggers = {
       --     -- Leader triggers
@@ -232,10 +233,12 @@ return {
   },
   {
     "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
     config = function ()
-      require("indent_blankline").setup {
-        show_current_context = true,
-        show_current_context_start = true,
+      require("ibl").setup {
+        scope = {
+          enabled = false,
+        },
       }
     end
   },
@@ -550,7 +553,6 @@ return {
       { 'tpope/vim-dadbod', lazy = true },
       { 'kristijanhusak/vim-dadbod-completion', ft = { 'sql', 'mysql', 'plsql' }, lazy = true },
     },
-    event = 'VeryLazy',
     cmd = {
       'DBUI',
       'DBUIToggle',
