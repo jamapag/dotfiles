@@ -111,6 +111,15 @@ return {
           end
         end, opts('change dir'))
 
+        vim.keymap.set('n', 'A', function()
+          local view = require "nvim-tree.view"
+          if view.View.width < 100 then
+            view.resize('+300')
+          else
+            view.resize('-300')
+          end
+        end, opts('Toggle NvimTree Zoom'))
+
         vim.keymap.set('n', 's', api.node.open.vertical, opts('Open: Vertical Split'))
         vim.keymap.set('n', 'gs', api.node.run.system, opts('Run System'))
         vim.keymap.set('n', 'gfg', function()
