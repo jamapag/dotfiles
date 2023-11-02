@@ -28,6 +28,7 @@ return {
       require("mini.splitjoin").setup({})
       require("mini.files").setup({})
       require("mini.indentscope").setup({})
+      require("mini.pick").setup({})
       -- require("mini.clue").setup({
       --   triggers = {
       --     -- Leader triggers
@@ -61,6 +62,8 @@ return {
       })
 
       vim.keymap.set("n", "<leader>bd", ":lua MiniBufremove.wipeout()<CR>", { desc = "Delete buffer" })
+      vim.keymap.set("n", "<leader>pg", ":Pick grep_live<CR>", { desc = "Pick grep_live" })
+      vim.keymap.set("n", "<leader>pf", ":Pick files<CR>", { desc = "Pick files" })
     end,
   },
   {
