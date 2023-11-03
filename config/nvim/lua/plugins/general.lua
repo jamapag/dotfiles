@@ -18,6 +18,7 @@ return {
     "echasnovski/mini.nvim",
     version = false,
     config = function ()
+      require('mini.extra').setup()
       require('mini.bufremove').setup({})
       require('mini.pairs').setup({})
       require("mini.cursorword").setup({})
@@ -27,8 +28,10 @@ return {
       require("mini.trailspace").setup({})
       require("mini.splitjoin").setup({})
       require("mini.files").setup({})
-      require("mini.indentscope").setup({})
       require("mini.pick").setup({})
+      require("mini.indentscope").setup({
+        symbol = '│',
+      })
       -- require("mini.clue").setup({
       --   triggers = {
       --     -- Leader triggers
