@@ -65,8 +65,13 @@ return {
       })
 
       vim.keymap.set("n", "<leader>bd", ":lua MiniBufremove.wipeout()<CR>", { desc = "Delete buffer" })
+
       vim.keymap.set("n", "<leader>pg", ":Pick grep_live<CR>", { desc = "Pick grep_live" })
+      vim.keymap.set("n", "<leader>pG", ":Pick grep pattern='<cword>'<CR>", { desc = "Pick: grep current word", noremap = false })
       vim.keymap.set("n", "<leader>pf", ":Pick files<CR>", { desc = "Pick files" })
+      vim.keymap.set("n", "<leader>pb", ":Pick buffers<CR>", { desc = "Pick: buffers", noremap = false })
+      vim.keymap.set("n", "<leader>pd", ":Pick diagnostic scope='current'<CR>", { desc = "Pick: diagnostic", noremap = false })
+      vim.keymap.set("n", "<leader>pr", ":Pick lsp scope='references'<CR>", { desc = "Pick: lsp references", noremap = false })
     end,
   },
   {
