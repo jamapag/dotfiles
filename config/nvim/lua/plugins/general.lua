@@ -23,6 +23,7 @@ return {
       require('mini.pairs').setup({})
       require("mini.cursorword").setup({})
       require("mini.surround").setup({})
+      require("mini.ai").setup({})
       require("mini.comment").setup({})
       require("mini.statusline").setup({})
       require("mini.trailspace").setup({})
@@ -164,6 +165,7 @@ return {
   },
   {
     "nvim-treesitter/nvim-treesitter",
+    build = ':TSUpdate',
     opts = {
       auto_install = true,
       ensure_installed = {
@@ -375,7 +377,6 @@ return {
       require("mason-lspconfig").setup {
         ensure_installed = {
           "lua_ls",
-          "rust_analyzer",
           "phpactor",
           "cssls",
           "html",
@@ -573,6 +574,8 @@ return {
   },
   { 'elmar-hinz/vim.typoscript' },
   { 'mg979/vim-visual-multi' },
+  -- Detect tabstop and shiftwidth automatically
+  { 'tpope/vim-sleuth' },
   -- Database query in vim:
   {
     'kristijanhusak/vim-dadbod-ui',
