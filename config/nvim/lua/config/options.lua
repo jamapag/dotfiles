@@ -84,6 +84,13 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
   end,
 })
 
+vim.api.nvim_create_autocmd({ "FileType" }, {
+  pattern = {"sql"},
+  callback = function()
+    vim.opt.commentstring = "-- %s"
+  end,
+})
+
 -- vim.cmd [[autocmd FileType javascript setlocal ts=4 sts=4 sw=4]]
 
 local aug = vim.api.nvim_create_augroup("buf_large", { clear = true })
