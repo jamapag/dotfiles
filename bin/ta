@@ -20,8 +20,8 @@ fi
 # If --start was passed in immediately start a new session based on the current directory
 if [ "$DIR" == "--start" ]; then
   echo "starting"
-  path_name="$(basename "$PWD" | tr . -)"
-  session_name=${path_name//./_}
+  path_name="$PWD"
+  session_name="$(basename "$PWD" | tr . -)"
 else
   # ask the user which directory to start in
   selected_dir=$(fd --type d -I . ${DIR} | fzf --header="Select project from $(basename $DIR) >")
