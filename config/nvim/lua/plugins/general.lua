@@ -73,6 +73,8 @@ return {
       vim.keymap.set("n", "<leader>pb", ":Pick buffers<CR>", { desc = "Pick: buffers", noremap = false })
       vim.keymap.set("n", "<leader>pd", ":Pick diagnostic scope='current'<CR>", { desc = "Pick: diagnostic", noremap = false })
       vim.keymap.set("n", "<leader>pr", ":Pick lsp scope='references'<CR>", { desc = "Pick: lsp references", noremap = false })
+
+      vim.keymap.set("n", "<leader>nn", ":lua MiniFiles.open()<CR>", { desc = "Open MiniFiles"})
     end,
   },
   {
@@ -415,6 +417,7 @@ return {
         vim.keymap.set('n', '<leader>wl', function()
           vim.inspect(vim.lsp.buf.list_workspace_folders())
         end, opts("Lsp: List workspace folders"))
+        vim.keymap.set('n', '<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, opts("[W]orkspace [S]ymbols"))
         vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, opts("Lsp: Type difinition"))
         vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts("Lsp: buf rename"))
         vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts("Lsp: show references"))
@@ -457,9 +460,6 @@ return {
       "nvim-telescope/telescope.nvim",
     },
   },
-  --{ "prettier/vim-prettier" },
-  --{ "sbdchd/neoformat" },
-  { "adnan007d/vim-prettier" },
   {
     "junegunn/fzf.vim",
     dependencies = {
