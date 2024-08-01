@@ -38,6 +38,7 @@ vim.opt.smartcase = true
 
 vim.opt.number = true
 vim.opt.numberwidth = 6
+vim.opt.signcolumn = 'yes'
 
 vim.opt.cursorline = true
 

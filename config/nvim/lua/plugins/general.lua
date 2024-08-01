@@ -24,7 +24,6 @@ return {
       require("mini.cursorword").setup({})
       require("mini.surround").setup({})
       require("mini.ai").setup({})
-      require("mini.comment").setup({})
       require("mini.statusline").setup({})
       require("mini.trailspace").setup({})
       require("mini.splitjoin").setup({})
@@ -74,7 +73,7 @@ return {
       vim.keymap.set("n", "<leader>pd", ":Pick diagnostic scope='current'<CR>", { desc = "Pick: diagnostic", noremap = false })
       vim.keymap.set("n", "<leader>pr", ":Pick lsp scope='references'<CR>", { desc = "Pick: lsp references", noremap = false })
 
-      vim.keymap.set("n", "<leader>nn", ":lua MiniFiles.open()<CR>", { desc = "Open MiniFiles"})
+      vim.keymap.set("n", "<leader>nn", ":lua MiniFiles.open(vim.api.nvim_buf_get_name(0))<CR>", { desc = "Open MiniFiles"})
     end,
   },
   {
@@ -411,7 +410,7 @@ return {
         vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts("Lsp: Go to definition"))
         vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts("Lsp: Buf hover"))
         vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts("Lsp: Go to implementation"))
-        vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts("Lsp: Signature help"))
+        vim.keymap.set('n', '<C-s>', vim.lsp.buf.signature_help, opts("Lsp: Signature help"))
         vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, opts("Lsp: Add workspace folder"))
         vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, opts("Lsp: Remove workspace folder"))
         vim.keymap.set('n', '<leader>wl', function()
@@ -593,6 +592,34 @@ return {
       -- vim.g.db_ui_show_help = 0
       -- vim.g.db_ui_win_position = 'right'
       -- vim.g.db_ui_use_nerd_fonts = 1
+    end,
+  },
+  {
+    "leath-dub/snipe.nvim",
+    config = function()
+      local snipe = require("snipe")
+      snipe.setup()
+      vim.keymap.set("n", "gb", snipe.create_buffer_menu_toggler())
+    end
+  },
+  {
+    "oysandvik94/curl.nvim",
+    -- cmd = { "CurlOpen" },
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    config = function ()
+      local curl = require("curl")
+      curl.setup({})
+
+      vim.keymap.set("n", "<leader>cc", function() curl.open_curl_tab() end, { desc = "Open a curl tab scoped to the current working directory" })
+      vim.keymap.set("n", "<leader>cq", function() curl.close_curl_tab() end, { desc = "Close a curl tab" })
+    end,
+  },
+  {
+    "supermaven-inc/supermaven-nvim",
+    config = function()
+      require("supermaven-nvim").setup({})
     end,
   }
 }
