@@ -39,4 +39,4 @@
 [diff]
     renamelimit = 5000
 [pull]
-	rebase = false
+    rebase = false

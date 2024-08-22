@@ -50,6 +50,21 @@ return {
       --   }
       -- })
 
+      local files_find_in_dir = function(path)
+        -- Works only if cursor is on the valid file system entry
+        local cur_entry_path = MiniFiles.get_fs_entry().path
+        local cur_directory = vim.fs.dirname(cur_entry_path)
+        MiniFiles.close()
+        require('telescope.builtin').live_grep({search_dirs = {cur_directory}})
+      end
+
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'MiniFilesBufferCreate',
+        callback = function(args)
+          vim.keymap.set('n', 'gfg', files_find_in_dir, { buffer = args.data.buf_id })
+        end,
+      })
+
       local hipatterns = require('mini.hipatterns')
       hipatterns.setup({
         highlighters = {
@@ -303,7 +318,7 @@ return {
           ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
           ['<C-e>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
           ['<C-y>'] = cmp.config.disable, -- If you want to remove the default `<C-y>` mapping, You can specify `cmp.config.disable` value.
-          ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's' }),
+          -- ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's' }),
           ['<CR>'] = cmp.mapping.confirm({ select = false }),
         },
         sources = cmp.config.sources({
@@ -621,6 +636,12 @@ return {
     config = function()
       require("supermaven-nvim").setup({})
     end,
+  },
+  {
+    'stevearc/quicker.nvim',
+    ---@module "quicker"
+    ---@type quicker.SetupOptions
+    opts = {},
   }
 }
 
