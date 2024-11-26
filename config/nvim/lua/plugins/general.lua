@@ -27,7 +27,12 @@ return {
       require("mini.statusline").setup({})
       require("mini.trailspace").setup({})
       require("mini.splitjoin").setup({})
-      require("mini.files").setup({})
+      require("mini.files").setup({
+        windows = {
+          preview = true,
+          width_preview = 60,
+        },
+      })
       require("mini.pick").setup({})
       require("mini.indentscope").setup({
         symbol = '│',
@@ -288,7 +293,8 @@ return {
     end
   },
   {
-    "hrsh7th/nvim-cmp",
+    -- "hrsh7th/nvim-cmp",
+    "iguanacucumber/magazine.nvim",
     event = "InsertEnter",
     dependencies = {
       "hrsh7th/cmp-buffer",
@@ -396,7 +402,7 @@ return {
           "phpactor",
           "cssls",
           "html",
-          "tsserver",
+          "ts_ls",
           "ols",
         },
       }
@@ -614,7 +620,7 @@ return {
     config = function()
       local snipe = require("snipe")
       snipe.setup()
-      vim.keymap.set("n", "gb", snipe.create_buffer_menu_toggler())
+      vim.keymap.set("n", "gb", snipe.open_buffer_menu)
     end
   },
   {
