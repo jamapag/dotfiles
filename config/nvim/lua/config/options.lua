@@ -40,6 +40,8 @@ vim.opt.number = true
 vim.opt.numberwidth = 6
 vim.opt.signcolumn = 'yes'
 
+vim.opt.previewheight = 30
+
 vim.opt.cursorline = true
 
 vim.opt.backspace = "indent,eol,start"

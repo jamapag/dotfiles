@@ -1,6 +1,5 @@
 -- Past without rewriting copied text
 vim.keymap.set("x", "<leader>p", '"_dP', { desc = "Paste without rewriting copied text", noremap = true })
-
 -- Highlight last inserted text
 vim.keymap.set("n", "gV", "`[v`]", { desc = "Highlight last inserted text", noremap = true })
 
@@ -46,7 +45,8 @@ vim.keymap.set("n", "N", "Nzzzv", { noremap = true })
 vim.keymap.set("i", "<C-v>", "<ESC>:set paste<CR>mui<C-R>+<ESC>mv'uV'v=:set nopaste<CR>", { noremap = true })
 
 
-vim.keymap.set("n", "<leader>id", ':lua require("custom.phpdoc").insert_php_doc()<CR>', { desc = "Insert php doc string", noremap = true })
+vim.keymap.set("n", "+", ':resize +1<CR>', { desc = "Increase window height", noremap = true })
+vim.keymap.set("n", "-", ':resize -1<CR>', { desc = "Decrease window height", noremap = true })
 
 vim.keymap.set("n", "<leader>t2", ':set shiftwidth=2<CR>', { noremap = true })
 vim.keymap.set("n", "<leader>t4", ':set shiftwidth=4<CR>', { noremap = true })

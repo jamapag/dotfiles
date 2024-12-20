@@ -648,6 +648,15 @@ return {
     ---@module "quicker"
     ---@type quicker.SetupOptions
     opts = {},
+  },
+  {
+    dir = "~/.config/nvim/lua/custom/",
+    config = function()
+      require("custom.ddev").setup({})
+
+      vim.keymap.set("n", "<leader>dd", ':DDEVToggleDBUI<CR>', { desc = "Toggle dbui with ddev connection config", noremap = true })
+      vim.keymap.set("n", "<leader>id", ':lua require("custom.phpdoc").insert_php_doc()<CR>', { desc = "Insert php doc string", noremap = true })
+    end,
   }
 }
 
