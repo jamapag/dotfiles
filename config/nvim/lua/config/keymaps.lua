@@ -9,7 +9,7 @@ vim.keymap.set("v", "<Space>", "zf", { desc = "Toggle fold", noremap = true })
 
 vim.keymap.set("n", "<leader>l", ":set list!<CR>", { desc = "Toggle showing tabs, spaces, trailing spaces" })
 
-vim.keymap.set("n", "<leader>ce", ":e! ~/.config/nvim/init.lua<CR>", { desc = "Edit init.lua" })
+vim.keymap.set("n", "<leader>ce", ":e! ~/.config/nvim/lua/config/options.lua<CR>", { desc = "Edit options.lua" })
 vim.keymap.set("n", "<leader>cp", ":e! ~/.config/nvim/lua/plugins/general.lua<CR>", { desc = "Edit plugins/general.lua" })
 
 -- Window jumping: Replaced with vim-tmux-navigator mappings.

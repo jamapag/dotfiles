@@ -10,10 +10,15 @@ vim.opt.fillchars = {
   eob = " ",
 }
 
-vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
+vim.o.foldlevel = 99
 vim.o.foldlevelstart = 99
 vim.o.foldenable = true
 vim.o.foldcolumn = "0"
+vim.o.foldmethod = "expr"
+vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.o.foldtext = ""
+vim.opt.foldcolumn = "0"
+vim.opt.fillchars:append({fold = " "})
 
 vim.opt.autowrite = true
 vim.opt.autoread = true
@@ -46,10 +51,10 @@ vim.opt.cursorline = true
 
 vim.opt.backspace = "indent,eol,start"
 
-vim.opt.tabstop = 2
-vim.opt.softtabstop = 2
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
 vim.opt.expandtab = true
-vim.opt.shiftwidth = 2
+vim.opt.shiftwidth = 4
 vim.opt.smarttab = true
 
 vim.opt.laststatus = 2
@@ -71,7 +76,7 @@ vim.api.nvim_create_autocmd({"BufNewFile", "BufRead"}, {
 })
 
 vim.api.nvim_create_autocmd({ "FileType" }, {
-  pattern = {"phtml", "php", "html"},
+  pattern = {"phtml", "php", "html", "scss", "css", "js"},
   callback = function()
     vim.opt_local.tabstop = 4
     vim.opt_local.softtabstop = 4
@@ -96,27 +101,27 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
 
 -- vim.cmd [[autocmd FileType javascript setlocal ts=4 sts=4 sw=4]]
 
-local aug = vim.api.nvim_create_augroup("buf_large", { clear = true })
-vim.api.nvim_create_autocmd({ "BufReadPre" }, {
-  callback = function()
-    local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()))
-    if ok and stats and (stats.size > 1000000) then
-      vim.b.large_buf = true
-      vim.cmd("syntax off")
-      vim.cmd("IBLDisable") -- disable indent-blankline.nvim
-      vim.opt_local.foldmethod = "manual"
-      vim.opt_local.spell = false
+-- local aug = vim.api.nvim_create_augroup("buf_large", { clear = true })
+-- vim.api.nvim_create_autocmd({ "BufReadPre" }, {
+--   callback = function()
+--     local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(vim.api.nvim_get_current_buf()))
+--     if ok and stats and (stats.size > 1000000) then
+--       vim.b.large_buf = true
+--       vim.cmd("syntax off")
+--       vim.cmd("IBLDisable") -- disable indent-blankline.nvim
+--       vim.opt_local.foldmethod = "manual"
+--       vim.opt_local.spell = false
+--
+--       vim.cmd("filetype off")
+--       vim.cmd("set noundofile")
+--       vim.cmd("set noswapfile")
+--       vim.cmd("set noloadplugins")
+--     else
+--       vim.b.large_buf = false
+--     end
+--   end,
+--   group = aug,
+--   pattern = "*",
+-- })
 
-      vim.cmd("filetype off")
-      vim.cmd("set noundofile")
-      vim.cmd("set noswapfile")
-      vim.cmd("set noloadplugins")
-    else
-      vim.b.large_buf = false
-    end
-  end,
-  group = aug,
-  pattern = "*",
-})
-
-vim.diagnostic.config({virtual_text = false})
+vim.diagnostic.config({virtual_text = { current_line = true }})
