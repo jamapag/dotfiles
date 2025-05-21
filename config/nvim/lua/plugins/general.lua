@@ -112,7 +112,18 @@ return {
     end
   },
   { "christoomey/vim-tmux-navigator" },
-  { 'christoomey/vim-tmux-runner' },
+  {
+    "christoomey/vim-tmux-runner",
+    config = function()
+      vim.api.nvim_create_autocmd({ "FileType" }, {
+        pattern = {"odin"},
+        callback = function()
+          vim.keymap.set("n", "<leader>ee", ":VtrSendCommandToRunner! odin run .<CR>")
+          vim.opt.commentstring = "-- %s"
+        end,
+      })
+    end,
+  },
   {
     "nvim-tree/nvim-tree.lua",
     dependencies = {
@@ -230,14 +241,13 @@ return {
         "toml",
         "tsx",
         "typescript",
+        "twig",
         "vhs",
         "vim",
         "vue",
         "wgsl",
         "yaml",
-        -- "wgsl",
         "json",
-        -- "markdown",
       },
       highlight = {
         enable = true,
@@ -362,39 +372,16 @@ return {
       vim.api.nvim_set_keymap('s', '<Tab>', 'vsnip#jumpable(1) ? "<Plug>(vsnip-jump-next)" : "<Tab>"', { silent = true, expr = true })
       vim.api.nvim_set_keymap('i', '<S-Tab>', 'vsnip#jumpable(-1) ? "<Plug>(vsnip-jump-prev)" : "<S-Tab>"', { silent = true, expr = true })
       vim.api.nvim_set_keymap('s', '<S-Tab>', 'vsnip#jumpable(-1) ? "<Plug>(vsnip-jump-prev)" : "<S-Tab>"', { silent = true, expr = true })
-
-      -- vim.api.nvim_create_autocmd(
-      --   {"TextChangedI", "TextChangedP"},
-      --   {
-      --     callback = function()
-      --       local line = vim.api.nvim_get_current_line()
-      --       local cursor = vim.api.nvim_win_get_cursor(0)[2]
-      --
-      --       local current = string.sub(line, cursor, cursor + 1)
-      --       if current == "." or current == "," or current == " " then
-      --         require('cmp').close()
-      --       end
-      --
-      --       local before_line = string.sub(line, 1, cursor + 1)
-      --       local after_line = string.sub(line, cursor + 1, -1)
-      --       if not string.match(before_line, '^%s+$') then
-      --         if after_line == "" or string.match(before_line, " $") or string.match(before_line, "%.$") then
-      --           require('cmp').complete()
-      --         end
-      --       end
-      --     end,
-      --     pattern = "*"
-      --   })
     end
   },
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     config = function ()
       require("mason").setup()
     end
   },
   {
-    "williamboman/mason-lspconfig.nvim",
+    "mason-org/mason-lspconfig.nvim",
     config = function ()
       require("mason-lspconfig").setup {
         ensure_installed = {
@@ -405,27 +392,14 @@ return {
           "ts_ls",
           "ols",
         },
+        automatic_enable = true,
       }
 
-      -- local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
-      local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
-      local lsp_attach = function(client, bufnr)
-        -- local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
-        local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
-
-        -- Enable completion triggered by <c-x><c-o>
-        buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
-
+      local buf_set_keymaps = function(bufnr)
         -- Mappings.
         local function opts(desc)
-          return { desc = desc, noremap = true, silent = true }
+          return { desc = desc, buffer = bufnr, noremap = true, silent = true }
         end
-
-
-        -- See `:help vim.lsp.*` for documentation on any of the below functions
-        --buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-        --buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-        --buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 
         vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts("Lsp: Go to declaration"))
         vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts("Lsp: Go to definition"))
@@ -450,27 +424,30 @@ return {
         vim.api.nvim_create_user_command("Format", vim.lsp.buf.format, {})
       end
 
-      local lspconfig = require('lspconfig')
-      require('mason-lspconfig').setup_handlers({
-        function(server_name)
-          lspconfig[server_name].setup({
-            on_attach = lsp_attach,
-            capabilities = lsp_capabilities,
-          })
+      vim.api.nvim_create_autocmd("LspAttach", {
+        callback = function(args)
+          local bufnr = args.buf
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
+
+          if client.server_capabilities.completionProvider then
+            vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
+          end
+          if client.server_capabilities.definitionProvider then
+            vim.bo[bufnr].tagfunc = "v:lua.vim.lsp.tagfunc"
+          end
+
+          buf_set_keymaps(bufnr)
         end,
-        ["lua_ls"] = function ()
-          lspconfig["lua_ls"].setup({
-            on_attach = lsp_attach,
-            capabilities = lsp_capabilities,
-            settings = {
-              Lua = {
-                diagnostics = {
-                  globals = { "vim" }
-                }
-              }
+      })
+
+      vim.lsp.config("lua_ls", {
+        settings = {
+          Lua = {
+            diagnostics = {
+              globals = { "vim" }
             }
-          })
-        end,
+          }
+        }
       })
     end
   },
@@ -582,6 +559,7 @@ return {
       local mark = require("harpoon.mark")
       local ui = require("harpoon.ui")
 
+      -- File list
       vim.keymap.set("n", "<leader>ha", mark.add_file, { desc = "Harpoon: add file" })
       vim.keymap.set("n", "<leader>hh", ui.toggle_quick_menu, { desc = "Harpoon: toggle quick menu" })
 
@@ -658,6 +636,13 @@ return {
       vim.keymap.set("n", "<leader>dd", ':DDEVToggleDBUI<CR>', { desc = "Toggle dbui with ddev connection config", noremap = true })
       vim.keymap.set("n", "<leader>id", ':lua require("custom.phpdoc").insert_php_doc()<CR>', { desc = "Insert php doc string", noremap = true })
     end,
-  }
+  },
+  {
+    "ray-x/lsp_signature.nvim",
+    event = "InsertEnter",
+    config = function()
+      require "lsp_signature".setup({})
+    end,
+  },
 }
 
