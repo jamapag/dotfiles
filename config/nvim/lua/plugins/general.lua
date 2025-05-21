@@ -37,23 +37,13 @@ return {
       require("mini.indentscope").setup({
         symbol = '│',
       })
-      -- require("mini.clue").setup({
-      --   triggers = {
-      --     -- Leader triggers
-      --     { mode = 'n', keys = '<Leader>' },
-      --
-      --     { mode = 'n', keys = ']' },
-      --     { mode = 'n', keys = '[' },
-      --
-      --     -- Built-in completion
-      --     { mode = 'i', keys = '<C-x>' },
-      --
-      --     -- `g` key
-      --     { mode = 'n', keys = 'g' },
-      --     { mode = 'x', keys = 'g' },
-      --     { mode = 'x', keys = '<Leader>' },
-      --   }
-      -- })
+
+      local map_combo = require('mini.keymap').map_combo
+      local mode = { 'i' }
+      map_combo(mode, 'jk', '<BS><BS><Esc>', { delay = 700 })
+      map_combo(mode, 'kj', '<BS><BS><Esc>', { delay = 700 })
+      map_combo(mode, 'kk', '<BS><BS><Esc>', { delay = 700 })
+      map_combo(mode, 'jj', '<BS><BS><Esc>', { delay = 700 })
 
       local files_find_in_dir = function(path)
         -- Works only if cursor is on the valid file system entry
@@ -551,7 +541,6 @@ return {
 
     end
   },
-  { "romainl/vim-cool" },
   { "mattn/emmet-vim" },
   {
     'ThePrimeagen/harpoon',

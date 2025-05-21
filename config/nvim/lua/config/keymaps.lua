@@ -26,9 +26,11 @@ vim.keymap.set("n", "j", "gj", { noremap = true })
 vim.keymap.set("n", "k", "gk", { noremap = true })
 
 -- Esc in insert mode
-vim.keymap.set("i", "jk", "<ESC>", { noremap = true })
-vim.keymap.set("i", "jj", "<ESC>", { noremap = true })
-vim.keymap.set("i", "kk", "<ESC>", { noremap = true })
+-- vim.keymap.set("i", "jk", "<ESC>", { noremap = true })
+-- vim.keymap.set("i", "jj", "<ESC>", { noremap = true })
+-- vim.keymap.set("i", "kk", "<ESC>", { noremap = true })
+
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
 -- Move visual selection
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { noremap = true })
