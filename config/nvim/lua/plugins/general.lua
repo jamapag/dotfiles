@@ -217,7 +217,6 @@ return {
         "meson",
         "ninja",
         "nix",
-        "norg",
         "org",
         "php",
         "python",
@@ -231,6 +230,7 @@ return {
         "toml",
         "tsx",
         "typescript",
+        "typoscript",
         "twig",
         "vhs",
         "vim",
@@ -559,7 +559,7 @@ return {
       vim.keymap.set("n", "<leader>5", function() ui.nav_file(5) end)
     end
   },
-  { 'elmar-hinz/vim.typoscript' },
+  -- { 'elmar-hinz/vim.typoscript' },
   { 'mg979/vim-visual-multi' },
   -- Detect tabstop and shiftwidth automatically
   { 'tpope/vim-sleuth' },
