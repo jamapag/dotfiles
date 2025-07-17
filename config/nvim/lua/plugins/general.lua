@@ -143,11 +143,13 @@ return {
         end, opts('change dir'))
 
         vim.keymap.set('n', 'A', function()
-          local view = require "nvim-tree.view"
-          if view.View.width < 100 then
-            view.resize('+300')
+          local core = require("nvim-tree.core")
+          local explorer = core.get_explorer()
+          vim.print(explorer.view:get_width())
+          if explorer.view:get_width() < 100 then
+            explorer.view:resize('+300')
           else
-            view.resize('-300')
+            explorer.view:resize('-300')
           end
         end, opts('Toggle NvimTree Zoom'))
 
