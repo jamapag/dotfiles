@@ -145,7 +145,6 @@ return {
         vim.keymap.set('n', 'A', function()
           local core = require("nvim-tree.core")
           local explorer = core.get_explorer()
-          vim.print(explorer.view:get_width())
           if explorer.view:get_width() < 100 then
             explorer.view:resize('+300')
           else
