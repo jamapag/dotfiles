@@ -91,7 +91,10 @@ function M.insert_php_doc()
 
   for i, v in ipairs(lines) do
     local shiftedLine = ps.dedent(v, col1)
-		lines[i] = shiftedLine
+    if v:find('^ ') ~= nil then
+      shiftedLine = " " .. shiftedLine
+    end
+    lines[i] = shiftedLine
   end
   vim.api.nvim_buf_set_lines(bufnr, row1, row1, 0, lines)
 end

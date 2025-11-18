@@ -15,7 +15,7 @@ return {
     end,
   },
   {
-    "echasnovski/mini.nvim",
+    "nvim-mini/mini.nvim",
     version = false,
     config = function ()
       require('mini.extra').setup()
@@ -27,6 +27,7 @@ return {
       require("mini.statusline").setup({})
       require("mini.trailspace").setup({})
       require("mini.splitjoin").setup({})
+      require("mini.diff").setup({})
       require("mini.files").setup({
         windows = {
           preview = true,
@@ -35,7 +36,7 @@ return {
       })
       require("mini.pick").setup({})
       require("mini.indentscope").setup({
-        symbol = '│',
+        symbol = '▎',
       })
 
       local map_combo = require('mini.keymap').map_combo
@@ -48,7 +49,14 @@ return {
       local files_find_in_dir = function(path)
         -- Works only if cursor is on the valid file system entry
         local cur_entry_path = MiniFiles.get_fs_entry().path
-        local cur_directory = vim.fs.dirname(cur_entry_path)
+        local cur_directory -- = vim.fs.dirname(cur_entry_path)
+        --
+        if vim.fn.isdirectory(cur_entry_path) ~= 0 then
+          cur_directory = cur_entry_path
+        else
+          cur_directory = vim.fs.dirname(cur_entry_path)
+        end
+
         MiniFiles.close()
         require('telescope.builtin').live_grep({search_dirs = {cur_directory}})
       end
@@ -84,6 +92,9 @@ return {
       vim.keymap.set("n", "<leader>pr", ":Pick lsp scope='references'<CR>", { desc = "Pick: lsp references", noremap = false })
 
       vim.keymap.set("n", "<leader>nn", ":lua MiniFiles.open(vim.api.nvim_buf_get_name(0))<CR>", { desc = "Open MiniFiles"})
+
+      vim.keymap.set("n", "<leader>tr", ":lua MiniTrailspace.trim()<CR>", { desc = "Trim Trailing wihitespaces" })
+      vim.keymap.set("n", "<leader>gd", ":lua MiniDiff.toggle_overlay()<CR>", { desc = "Toggle mini.diff overlay" })
     end,
   },
   {
@@ -220,6 +231,7 @@ return {
         "nix",
         "org",
         "php",
+        "phpdoc",
         "python",
         "query",
         "regex",
@@ -609,7 +621,14 @@ return {
     "supermaven-inc/supermaven-nvim",
     cmd = { "SupermavenStart" },
     config = function()
-      require("supermaven-nvim").setup({})
+      require("supermaven-nvim").setup({
+        keymaps = {
+          accept_suggestion = "<C-l>",
+          clear_suggestion = "<C-]>",
+          accept_word = "<C-j>"
+        },
+        disable_keymaps = false,
+      })
     end,
   },
   {
@@ -633,6 +652,13 @@ return {
     config = function()
       require "lsp_signature".setup({})
     end,
+  },
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {},
   },
 }
 
