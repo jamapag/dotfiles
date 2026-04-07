@@ -154,12 +154,11 @@ return {
         end, opts('change dir'))
 
         vim.keymap.set('n', 'A', function()
-          local core = require("nvim-tree.core")
-          local explorer = core.get_explorer()
-          if explorer.view:get_width() < 100 then
-            explorer.view:resize('+300')
+          local windowId = api.tree.winid()
+          if vim.fn.winwidth(windowId) < 100 then
+            api.tree.resize({relative = 300});
           else
-            explorer.view:resize('-300')
+            api.tree.resize();
           end
         end, opts('Toggle NvimTree Zoom'))
 
@@ -199,6 +198,7 @@ return {
   },
   {
     "nvim-treesitter/nvim-treesitter",
+    branch = "main",
     build = ':TSUpdate',
     opts = {
       auto_install = true,
@@ -258,7 +258,9 @@ return {
           return vim.b.large_buf
         end
       },
-      indent = { enable = true },
+      indent = {
+        enable = true,
+      },
       query_linter = {
         enable = true,
         use_virtual_text = true,
@@ -291,7 +293,7 @@ return {
       },
     },
     config = function (opts)
-      require("nvim-treesitter.configs").setup(opts.opts)
+      require("nvim-treesitter.config").setup(opts.opts)
     end
   },
   {
@@ -542,7 +544,7 @@ return {
     end
   },
   {
-    "ggandor/leap.nvim",
+    url = "https://codeberg.org/andyg/leap.nvim",
     config = function ()
       -- local leap = require('leap')
       -- Conflics with mini.surround mappings
