@@ -25,6 +25,7 @@ vim.opt.autoread = true
 
 vim.opt.history = 1000
 vim.opt.undolevels = 1000
+vim.opt.undofile = true
 vim.opt.hidden = true
 
 vim.opt.showcmd = true
@@ -132,3 +133,8 @@ vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead"}, {
 -- })
 
 vim.diagnostic.config({virtual_text = { current_line = true }})
+
+vim.cmd("packadd nvim.undotree")
+vim.keymap.set("n", "<leader>u", require("undotree").open)
+
+require("vim._core.ui2").enable({})
