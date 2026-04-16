@@ -550,9 +550,9 @@ return {
       -- Conflics with mini.surround mappings
       -- leap.add_default_mappings()
 
-      vim.keymap.set({'n', 'x', 'o'}, '<leader>s', '<Plug>(leap-forward-to)', { desc = "Leap forward" })
-      vim.keymap.set({'n', 'x', 'o'}, '<leader>S', '<Plug>(leap-backward-to)', { desc = "Leap backward" })
-      vim.keymap.set({'n', 'x', 'o'}, 'gs', '<Plug>(leap-from-window)', { desc = "Leap Leap untill" })
+      vim.keymap.set({'n', 'x', 'o'}, '<leader>s', '<Plug>(leap-forward)', { desc = "Leap forward" })
+      vim.keymap.set({'n', 'x', 'o'}, '<leader>S', '<Plug>(leap-backward)', { desc = "Leap backward" })
+      vim.keymap.set({'n', 'x', 'o'}, 'gs', '<Plug>(leap-anywhere)', { desc = "Leap anywhere" })
 
     end
   },
