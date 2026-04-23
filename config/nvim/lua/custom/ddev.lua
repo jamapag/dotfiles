@@ -5,10 +5,17 @@ local on_exit = function(obj)
     local ok, ddevStatus = pcall(vim.json.decode, obj.stdout)
     if ok then
       if ddevStatus.raw.dbinfo.published_port then
-        local type = ddevStatus.raw.type
+        local name = ddevStatus.raw.name
+        local dbType = ddevStatus.raw.dbinfo.database_type
+        local dbSchema = 'mysql'
+        local dbAuth = ddevStatus.raw.dbinfo.username .. ':' .. ddevStatus.raw.dbinfo.password
+
+        if dbType == 'postgres' then
+          dbSchema = 'postgresql'
+        end
 
         vim.g.dbs = {
-          { name = 'ddev-' .. type, url = 'mysql://127.0.0.1:' .. ddevStatus.raw.dbinfo.published_port .. '/db?login-path=ddev' }
+          { name = 'ddev-' .. name, url = dbSchema .. '://' .. dbAuth .. '@127.0.0.1:' .. ddevStatus.raw.dbinfo.published_port .. '/db' }
         }
 
         vim.schedule(function()
