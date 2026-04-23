@@ -422,8 +422,8 @@ return {
         vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts("Lsp: show references"))
         vim.keymap.set('n', '<leader>lca', vim.lsp.buf.code_action, opts("Lsp: code actions"))
         vim.keymap.set('n', '<leader>ds', require('telescope.builtin').lsp_document_symbols, opts("Lsp: telescope document symbols"))
-        vim.keymap.set('n', '<leader>df', vim.diagnostic.goto_next, opts("Lsp: diagnostic goto next"))
-        vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev, opts("Lsp: diagnostic goto prev"))
+        vim.keymap.set('n', '<leader>df', function() vim.diagnostic.jump({ count = 1, float = true }) end, opts("Lsp: diagnostic goto next"))
+        vim.keymap.set('n', '<leader>dp', function() vim.diagnostic.jump({ count = -1, float = true }) end, opts("Lsp: diagnostic goto prev"))
         vim.keymap.set('n', '<leader>dl', "<cmd>Telescope diagnostics<cr>", opts("Lsp: telescope diagnostics"))
 
         vim.api.nvim_create_user_command("Format", vim.lsp.buf.format, {})
