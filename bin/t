@@ -100,23 +100,23 @@ zoxide add "$RESULT" &>/dev/null # add to zoxide database
 FOLDER=$(basename "$RESULT")
 SESSION_NAME=$(echo "$FOLDER" | tr ' ' '_' | tr '.' '_' | tr ':' '_')
 
+printf "\033]2;%s\007" "$SESSION_NAME"
+
 if [ $TMUX_STATUS -eq 0 ]; then                                 # tmux is running
 	SESSION=$(tmux list-sessions -F '#S' | grep "^$SESSION_NAME$") # find existing session
 else
 	SESSION=""
 fi
 
-if [ "$TMUX" = "" ]; then                          # not currently in tmux
-	if [ "$SESSION" = "" ]; then                      # session does not exist
-		tmux new-session -s "$SESSION_NAME" -c "$RESULT" # create session and attach
+if [ -z "$TMUX" ]; then                          # not currently in tmux
+	if [ -z "$SESSION" ]; then                      # session does not exist
+		exec tmux new-session -s "$SESSION_NAME" -c "$RESULT" # create session and attach
 	else                                              # session exists
-		tmux attach -t "$SESSION"                        # attach to session
+		exec tmux attach -t "$SESSION"                        # attach to session
 	fi
 else                                                  # currently in tmux
-	if [ "$SESSION" = "" ]; then                         # session does not exist
+	if [ -z "$SESSION" ]; then                         # session does not exist
 		tmux new-session -d -s "$SESSION_NAME" -c "$RESULT" # create session
-		tmux switch-client -t "$SESSION_NAME"               # attach to session
-	else                                                 # session exists
-		tmux switch-client -t "$SESSION"                    # switch to session
 	fi
+	tmux switch-client -t "$SESSION_NAME"               # attach to session
 fi
