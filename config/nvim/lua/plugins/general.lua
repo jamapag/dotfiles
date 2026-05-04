@@ -120,7 +120,7 @@ return {
         pattern = {"odin"},
         callback = function()
           vim.keymap.set("n", "<leader>ee", ":VtrSendCommandToRunner! odin run .<CR>")
-          vim.opt.commentstring = "-- %s"
+          vim.opt.commentstring = "// %s"
         end,
       })
     end,
@@ -308,8 +308,7 @@ return {
     end
   },
   {
-    -- "hrsh7th/nvim-cmp",
-    "iguanacucumber/magazine.nvim",
+    "hrsh7th/nvim-cmp",
     event = "InsertEnter",
     dependencies = {
       "hrsh7th/cmp-buffer",
