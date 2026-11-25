@@ -88,35 +88,138 @@ else # argument provided
 	fi
 fi
 
+# tmux forbids ':' and '.' in session names
+sanitize_session_name() {
+	printf '%s' "$1" | tr ' .:' '_'
+}
+
+normalize_dir() {
+	if [ -d "$1" ]; then
+		(cd "$1" && pwd -P)
+	else
+		printf '%s\n' "${1%/}"
+	fi
+}
+
+session_name_taken() {
+	[ "$TMUX_STATUS" -eq 0 ] || return 1
+	tmux has-session -t "=$1" 2>/dev/null
+}
+
+# Reuse a session only when it was opened from this directory.
+# Same folder name in another path must become its own session.
+find_session_by_dir() {
+	local target="$1"
+	local name spath ppath candidate norm
+
+	while IFS=$'\t' read -r name spath ppath; do
+		[ -n "$name" ] || continue
+		candidate="$spath"
+		[ -z "$candidate" ] && candidate="$ppath"
+		[ -z "$candidate" ] && continue
+		norm=$(normalize_dir "$candidate")
+		if [ "$norm" = "$target" ]; then
+			printf '%s' "$name"
+			return 0
+		fi
+	done < <(tmux list-sessions -F $'#{session_name}\t#{session_path}\t#{pane_current_path}' 2>/dev/null)
+	return 1
+}
+
+unique_session_name() {
+	local path="$1"
+	local acc name dir parent
+	local base i
+
+	acc=$(basename "$path")
+	name=$(sanitize_session_name "$acc")
+	if ! session_name_taken "$name"; then
+		printf '%s' "$name"
+		return
+	fi
+
+	dir=$(dirname "$path")
+	while [ "$dir" != "/" ] && [ "$dir" != "." ]; do
+		acc="$(basename "$dir")_$acc"
+		name=$(sanitize_session_name "$acc")
+		if ! session_name_taken "$name"; then
+			printf '%s' "$name"
+			return
+		fi
+		parent=$(dirname "$dir")
+		[ "$parent" = "$dir" ] && break
+		dir=$parent
+	done
+
+	base=$(sanitize_session_name "$(basename "$path")")
+	i=2
+	while session_name_taken "${base}_$i"; do
+		i=$((i + 1))
+	done
+	printf '%s' "${base}_$i"
+}
+
+resolve_directory_session() {
+	local dir="$1"
+	zoxide add "$dir" &>/dev/null
+	RESULT=$(normalize_dir "$dir")
+	SESSION=""
+	if [ "$TMUX_STATUS" -eq 0 ]; then
+		SESSION=$(find_session_by_dir "$RESULT" || true)
+	fi
+	if [ -n "$SESSION" ]; then
+		SESSION_NAME=$SESSION
+	else
+		SESSION_NAME=$(unique_session_name "$RESULT")
+	fi
+}
+
 if [ "$RESULT" = "" ]; then # no result
 	exit 0                     # exit silently
 fi
 
-if [ $HOME_SED_SAFE -eq 0 ]; then
-	RESULT=$(echo "$RESULT" | sed -e "s|^~/|$HOME/|") # get real home path back
-fi
+# fzf prints paths as ~/... ; expand that literal prefix back to $HOME
+# shellcheck disable=SC2088
+case "$RESULT" in
+'~/'*)
+	RESULT="$HOME/${RESULT#'~/'}"
+	;;
+esac
 
-zoxide add "$RESULT" &>/dev/null # add to zoxide database
-FOLDER=$(basename "$RESULT")
-SESSION_NAME=$(echo "$FOLDER" | tr ' ' '_' | tr '.' '_' | tr ':' '_')
+SESSION=""
+case "$RESULT" in
+*/*)
+	if [ ! -d "$RESULT" ]; then
+		echo "No directory found."
+		exit 1
+	fi
+	resolve_directory_session "$RESULT"
+	;;
+*)
+	# fzf session list returns a bare name; paths always contain a slash
+	if [ "$TMUX_STATUS" -eq 0 ] && session_name_taken "$RESULT"; then
+		SESSION=$RESULT
+		SESSION_NAME=$RESULT
+	elif [ -d "$RESULT" ]; then
+		resolve_directory_session "$RESULT"
+	else
+		echo "No directory found."
+		exit 1
+	fi
+	;;
+esac
 
 printf "\033]2;%s\007" "$SESSION_NAME"
 
-if [ $TMUX_STATUS -eq 0 ]; then                                 # tmux is running
-	SESSION=$(tmux list-sessions -F '#S' | grep "^$SESSION_NAME$") # find existing session
-else
-	SESSION=""
-fi
-
-if [ -z "$TMUX" ]; then                          # not currently in tmux
-	if [ -z "$SESSION" ]; then                      # session does not exist
-		exec tmux new-session -s "$SESSION_NAME" -c "$RESULT" # create session and attach
-	else                                              # session exists
-		exec tmux attach -t "$SESSION"                        # attach to session
+if [ -z "$TMUX" ]; then                                         # not currently in tmux
+	if [ -z "$SESSION" ]; then                                     # session does not exist
+		exec tmux new-session -s "$SESSION_NAME" -c "$RESULT"         # create session and attach
+	else                                                           # session exists
+		exec tmux attach -t "$SESSION"                                 # attach to session
 	fi
-else                                                  # currently in tmux
-	if [ -z "$SESSION" ]; then                         # session does not exist
-		tmux new-session -d -s "$SESSION_NAME" -c "$RESULT" # create session
+else                                                            # currently in tmux
+	if [ -z "$SESSION" ]; then                                     # session does not exist
+		tmux new-session -d -s "$SESSION_NAME" -c "$RESULT"            # create session
 	fi
-	tmux switch-client -t "$SESSION_NAME"               # attach to session
+	tmux switch-client -t "$SESSION_NAME"                          # attach to session
 fi

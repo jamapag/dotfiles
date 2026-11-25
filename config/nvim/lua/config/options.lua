@@ -61,7 +61,7 @@ vim.opt.smarttab = true
 vim.opt.laststatus = 2
 vim.opt.statusline = "%n %f %h%1*%m%r%w%0* [%{strlen(&ft)?&ft:'none'},%{&encoding},%{&fileformat}]%=0x%-8B %c,%l %o %P"
 
-vim.opt.listchars = "tab:▸ ,eol:¬,trail:·"
+vim.opt.listchars = "tab:▸ ,eol:¬,trail:·,space:·"
 
 vim.opt.cindent = true
 vim.opt.smartindent = true
@@ -107,6 +107,13 @@ vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead"}, {
   end,
 })
 
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "twig", "html.twig" },
+  callback = function()
+    pcall(vim.treesitter.start)
+  end,
+})
+
 -- vim.cmd [[autocmd FileType javascript setlocal ts=4 sts=4 sw=4]]
 
 -- local aug = vim.api.nvim_create_augroup("buf_large", { clear = true })
@@ -137,4 +144,4 @@ vim.diagnostic.config({virtual_text = { current_line = true }})
 vim.cmd("packadd nvim.undotree")
 vim.keymap.set("n", "<leader>u", require("undotree").open)
 
-require("vim._core.ui2").enable({})
+-- require("vim._core.ui2").enable({})
